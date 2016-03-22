@@ -1,3 +1,11 @@
+--[[ 
+    © 2014 CloudSixteen.com do not share, re-distribute or modify
+    without permission of its author (kurozael@gmail.com).
+
+    Clockwork was created by Conna Wiles (also known as kurozael.)
+    http://cloudsixteen.com/license/clockwork.html
+--]]
+
 include("shared.lua");
 
 AddCSLuaFile("cl_init.lua");
@@ -12,13 +20,7 @@ function ENT:Initialize()
 	self:SetUseType(SIMPLE_USE);
 	self:SetHealth(800);
 	self:SetSolid(SOLID_VPHYSICS);
-	
-	local physicsObject = self:GetPhysicsObject();
-	
-	if (IsValid(physicsObject)) then
-		physicsObject:Wake();
-		physicsObject:EnableMotion(true);
-	end;
+	self:SetCollisionGroup(COLLISION_GROUP_WORLD);
 end;
 
 -- Called when the entity's transmit state should be updated.
@@ -58,8 +60,8 @@ function ENT:SetDoor(entity)
 	self.entity = entity;
 	self.entity:DeleteOnRemove(self);
 	self.entities = {entity};
-	
-	for k, v in ipairs( ents.FindByClass( entity:GetClass() ) ) do
+
+	for k, v in ipairs(ents.FindByClass(entity:GetClass())) do
 		if (self.entity != v) then
 			if (v:GetModel() == model and v:GetSkin() == skin) then
 				local tempPosition = v:GetPos();
@@ -134,12 +136,12 @@ function ENT:ActivateSmokeCharge(force)
 			if (IsValid(self)) then
 				
 				for k, v in ipairs(self.entities) do
-					if (IsValid(v) and string.lower( v:GetClass() ) == "prop_door_rotating") then
+					if (IsValid(v) and string.lower(v:GetClass()) == "prop_door_rotating") then
 						Schema:BustDownDoor(nil, v, force);
 						
 						local effectData = EffectData();
 						
-						effectData:SetOrigin( self:GetPos() );
+						effectData:SetOrigin(self:GetPos());
 						effectData:SetScale(0.75);
 						
 						util.Effect("cw_effect_smoke", effectData, true, true);
@@ -178,8 +180,8 @@ end;
 function ENT:Explode()
 	local effectData = EffectData();
 	
-	effectData:SetStart( self:GetPos() );
-	effectData:SetOrigin( self:GetPos() );
+	effectData:SetStart(self:GetPos());
+	effectData:SetOrigin(self:GetPos());
 	effectData:SetScale(1);
 	
 	util.Effect("Explosion", effectData, true, true);
@@ -229,7 +231,7 @@ end;
 
 -- Called when the entity takes damage.
 function ENT:OnTakeDamage(damageInfo)
-	self:SetHealth( math.max(self:Health() - damageInfo:GetDamage(), 0) );
+	self:SetHealth(math.max(self:Health() - damageInfo:GetDamage(), 0));
 	
 	if (self:Health() <= 0) then
 		self:ActivateSmokeCharge(damageInfo:GetDamageForce() * 8);
